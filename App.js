@@ -1,9 +1,4 @@
-import { useCallback } from "react";
-import {
-  SafeAreaView,
-  View,
-  Text,
-} from "react-native";
+import { View, Text } from "react-native";
 import { useFonts } from "expo-font";
 import RootNavigation from "./src/navigation";
 

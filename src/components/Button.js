@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import { colors } from "../consts";
 
@@ -17,10 +11,7 @@ import { colors } from "../consts";
 
 const Button = ({ text, onPress }) => {
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={styles.button}
-    >
+    <TouchableOpacity onPress={onPress} style={styles.button}>
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
   );

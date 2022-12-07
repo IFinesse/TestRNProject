@@ -1,14 +1,6 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React from "react";
-import {
-  LogoSVG1,
-  LogoSVG2,
-  LogoSVG3,
-} from "./SVGParts";
+import { LogoSVG1, LogoSVG2, LogoSVG3 } from "./SVGParts";
 
 const Logo = () => {
   console.log("bla logo");
@@ -25,11 +17,14 @@ const styles = StyleSheet.create({
   container: {},
   wrapper1: {
     position: "relative",
-    top: 3,
+    top: -41,
   },
   wrapper2: {
     position: "relative",
-    top: 44,
+  },
+  wrapper3: {
+    position: "relative",
+    top: -43,
   },
 });
 

@@ -3,13 +3,6 @@ import React, { useState } from "react";
 import { colors } from "../consts";
 import { EyeClosed, EyeOpened } from "./EyeIcons";
 
-// const Input = (props) => {
-//   return (<View>
-//     <Text style={styles.label}>
-//     <TextInput {...props}>
-//   </View>)
-// }
-
 const Input = ({ label, isPassword, ...props }) => {
   const [secure, setSecure] = useState(isPassword);
   return (
@@ -28,7 +21,10 @@ const Input = ({ label, isPassword, ...props }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    height: 52,
+    marginVertical: 22,
+  },
   label: {
     fontFamily: "PoppinsMedium",
     fontSize: 14,
@@ -41,7 +37,6 @@ const styles = StyleSheet.create({
     fontFamily: "PoppinsMedium",
     fontSize: 16,
     color: colors.black,
-    // paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: colors.lightGrey,
   },
@@ -51,10 +46,6 @@ const styles = StyleSheet.create({
   },
   lockIcon: {
     alignSelf: "center",
-    // paddingVertical: 12,
-    // alignSelf: "flex-end",
-    // position: "relative",
-    // top: -33,
   },
 });
 
