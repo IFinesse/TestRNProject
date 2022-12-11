@@ -5,6 +5,7 @@ import Logo from "../components/Logo";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { validateEmail, validatePassword } from "../utils";
+import SMSInput from "../components/SMSInput";
 
 const SignUp = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -41,6 +42,7 @@ const SignUp = ({ navigation }) => {
         <Logo />
       </View>
       <Text style={styles.title}>Sign Up To Woorkroom</Text>
+      <SMSInput />
       <Input
         label="Your name"
         value={name}
