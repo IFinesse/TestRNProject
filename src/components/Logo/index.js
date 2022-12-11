@@ -3,7 +3,6 @@ import React from "react";
 import { LogoSVG1, LogoSVG2, LogoSVG3 } from "./SVGParts";
 
 const Logo = () => {
-  console.log("bla logo");
   return (
     <View style={styles.container}>
       <LogoSVG2 style={styles.wrapper2} />

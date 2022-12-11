@@ -1,33 +1,55 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
-import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import React, { useState } from "react";
 import { colors } from "../consts";
 import Logo from "../components/Logo";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import { isIos } from "../utils";
+import { validateEmail, validatePassword } from "../utils";
 
-const Login = () => {
+const Login = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const handleSubmit = () => {
+    console.log("submit");
+  };
+  const handleSignUp = () => {
+    navigation.navigate("SignUp");
+  };
+
   return (
     <ScrollView style={styles.container}>
-      <SafeAreaView>
-        <View style={styles.logoWrapper}>
-          <Logo />
-        </View>
-        <Text style={styles.title}>Log In To Woorkroom</Text>
-        <Input label="Your email" placeholder="Email" />
-        <View style={styles.passwordWrapper}>
-          <Input label="Password" isPassword={true} placeholder="Password" />
-          <TouchableOpacity onPress={() => {}} style={styles.forgotPasswordLink}>
-            <Text style={[styles.linkText1, { textAlign: "right" }]}>Forgot password?</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.buttonWrapper}>
-          <Button text="Log in" onPress={() => {}} />
-        </View>
-        <TouchableOpacity style={styles.link}>
-          <Text style={styles.linkText1}>New User? </Text>
-          <Text style={styles.linkText2}>Create Account</Text>
+      <View style={styles.logoWrapper}>
+        <Logo />
+      </View>
+      <Text style={styles.title}>Log In To Woorkroom</Text>
+      <Input
+        label="Your email"
+        value={email}
+        onChangeText={(value) => setEmail(value)}
+        placeholder="Email"
+        validateInput={validateEmail}
+      />
+      <View style={styles.passwordWrapper}>
+        <Input
+          label="Password"
+          value={password}
+          onChangeText={(value) => setPassword(value)}
+          isPassword={true}
+          placeholder="Password"
+          validateInput={validatePassword}
+        />
+        <TouchableOpacity onPress={() => {}} style={styles.forgotPasswordLink}>
+          <Text style={[styles.linkText1, { textAlign: "right" }]}>Forgot password?</Text>
         </TouchableOpacity>
-      </SafeAreaView>
+      </View>
+      <View style={styles.buttonWrapper}>
+        <Button text="Log in" onPress={handleSubmit} />
+      </View>
+      <TouchableOpacity style={styles.link} onPress={handleSignUp}>
+        <Text style={styles.linkText1}>New User? </Text>
+        <Text style={styles.linkText2}>Create Account</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -50,6 +72,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: colors.black,
     textAlign: "center",
+  },
+  forgotPasswordLink: {
+    marginTop: isIos ? 0 : 15,
   },
   buttonWrapper: {
     marginTop: 50,

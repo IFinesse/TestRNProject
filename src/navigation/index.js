@@ -7,28 +7,17 @@ import EditScreen from "../screens/Edit";
 const Stack = createNativeStackNavigator();
 
 export default RootNavigation = () => {
-  console.log("bla nav");
-
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="SignUp"
         screenOptions={{
           headerShown: false,
         }}
       >
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-        />
-        <Stack.Screen
-          name="SignUp"
-          component={SignUpScreen}
-        />
-        <Stack.Screen
-          name="Edit"
-          component={EditScreen}
-        />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="Edit" component={EditScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
