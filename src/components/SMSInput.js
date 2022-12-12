@@ -8,7 +8,6 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
-import splitLayoutProps from "react-native/Libraries/StyleSheet/splitLayoutProps";
 
 const styles = StyleSheet.create({
   label: { fontFamily: "PoppinsMedium", fontSize: 14, color: colors.grey },
@@ -58,11 +57,8 @@ const SMSInput = () => {
         keyboardType="number-pad"
         textContentType="oneTimeCode"
         renderCell={({ index, symbol, isFocused }) => (
-          <View style={styles.cellWrapper} key={index}>
-            <Text
-              style={[styles.cell, isFocused && styles.focusCell]}
-              onLayout={getCellOnLayoutHandler(index)}
-            >
+          <View style={[styles.cellWrapper, isFocused && styles.focusCell]} key={index}>
+            <Text style={[styles.cell]} onLayout={getCellOnLayoutHandler(index)}>
               {symbol || (isFocused ? <Cursor /> : null)}
             </Text>
           </View>

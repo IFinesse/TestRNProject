@@ -6,8 +6,10 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import { validateEmail, validatePassword } from "../utils";
 import SMSInput from "../components/SMSInput";
+import PhoneInput from "../components/PhoneInput";
 
 const SignUp = ({ navigation }) => {
+  const [phoneCode, setPhoneCode] = useState(["+1", ""]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,6 +44,9 @@ const SignUp = ({ navigation }) => {
         <Logo />
       </View>
       <Text style={styles.title}>Sign Up To Woorkroom</Text>
+      <View style={styles.phoneWrapper}>
+        <PhoneInput onSubmit={(code) => setPhoneCode(code)} />
+      </View>
       <SMSInput />
       <Input
         label="Your name"
