@@ -39,74 +39,77 @@ const SignUp = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.logoWrapper}>
-        <Logo />
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.logoWrapper}>
+          <Logo />
+        </View>
+        <Text style={styles.title}>Sign Up To Woorkroom</Text>
+        <View style={styles.phoneWrapper}>
+          <PhoneInput onSubmit={(code) => setPhoneCode(code)} />
+        </View>
+        <SMSInput />
+        <Input
+          label="Your name"
+          value={name}
+          onChangeText={(value) => setName(value)}
+          placeholder="Name"
+          validateInput={validateName}
+        />
+        <Input
+          label="Your email"
+          value={email}
+          onChangeText={(value) => setEmail(value)}
+          placeholder="Email"
+          validateInput={validateEmail}
+          keyboardType="email-address"
+        />
+        <Input
+          label="Password"
+          value={password}
+          onChangeText={(value) => setPassword(value)}
+          isPassword={true}
+          placeholder="Password"
+          validateInput={validatePassword}
+        />
+        <Input
+          label="Confirm Password"
+          value={confirmPassword}
+          onChangeText={(value) => setConfirmPassword(value)}
+          isConfirmPassword={true}
+          placeholder="Password"
+          validateInput={validateConfirmPassword}
+        />
+        <View style={styles.buttonWrapper}>
+          <Button text="Next" onPress={handleSubmit} />
+        </View>
+        <TouchableOpacity style={styles.link} onPress={handleLogin}>
+          <Text style={styles.linkText1}>Have Account? </Text>
+          <Text style={styles.linkText2}>Log in</Text>
+        </TouchableOpacity>
       </View>
-      <Text style={styles.title}>Sign Up To Woorkroom</Text>
-      <View style={styles.phoneWrapper}>
-        <PhoneInput onSubmit={(code) => setPhoneCode(code)} />
-      </View>
-      <SMSInput />
-      <Input
-        label="Your name"
-        value={name}
-        onChangeText={(value) => setName(value)}
-        placeholder="Name"
-        validateInput={validateName}
-      />
-      <Input
-        label="Your email"
-        value={email}
-        onChangeText={(value) => setEmail(value)}
-        placeholder="Email"
-        validateInput={validateEmail}
-      />
-      <Input
-        label="Password"
-        value={password}
-        onChangeText={(value) => setPassword(value)}
-        isPassword={true}
-        placeholder="Password"
-        validateInput={validatePassword}
-      />
-      <Input
-        label="Confirm Password"
-        value={confirmPassword}
-        onChangeText={(value) => setConfirmPassword(value)}
-        isConfirmPassword={true}
-        placeholder="Password"
-        validateInput={validateConfirmPassword}
-      />
-      <View style={styles.buttonWrapper}>
-        <Button text="Next" onPress={handleSubmit} />
-      </View>
-      <TouchableOpacity style={styles.link} onPress={handleLogin}>
-        <Text style={styles.linkText1}>Have Account? </Text>
-        <Text style={styles.linkText2}>Log in</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: 32,
+    marginVertical: 50,
   },
   logoWrapper: {
-    paddingTop: 50,
-    justifyContent: "center",
     alignItems: "center",
     height: 200,
   },
   title: {
-    paddingVertical: 50,
     lineHeight: 36,
     fontFamily: "PoppinsMedium",
     fontSize: 24,
     color: colors.black,
     textAlign: "center",
+  },
+  phoneWrapper: {
+    marginTop: 50,
   },
   buttonWrapper: {
     marginTop: 50,
@@ -114,7 +117,8 @@ const styles = StyleSheet.create({
   link: {
     flexDirection: "row",
     justifyContent: "center",
-    marginVertical: 25,
+    marginTop: 35,
+    marginBottom: 10,
   },
   linkText1: {
     fontFamily: "PoppinsLight",

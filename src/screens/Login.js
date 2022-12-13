@@ -18,63 +18,64 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.logoWrapper}>
-        <Logo />
-      </View>
-      <Text style={styles.title}>Log In To Woorkroom</Text>
-      <Input
-        label="Your email"
-        value={email}
-        onChangeText={(value) => setEmail(value)}
-        placeholder="Email"
-        validateInput={validateEmail}
-      />
-      <View style={styles.passwordWrapper}>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.logoWrapper}>
+          <Logo />
+        </View>
+        <Text style={styles.title}>Log In To Woorkroom</Text>
         <Input
-          label="Password"
-          value={password}
-          onChangeText={(value) => setPassword(value)}
-          isPassword={true}
-          placeholder="Password"
-          validateInput={validatePassword}
+          label="Your email"
+          value={email}
+          onChangeText={(value) => setEmail(value)}
+          placeholder="Email"
+          validateInput={validateEmail}
+          keyboardType="email-address"
         />
-        <TouchableOpacity onPress={() => {}} style={styles.forgotPasswordLink}>
-          <Text style={[styles.linkText1, { textAlign: "right" }]}>Forgot password?</Text>
+        <View style={styles.passwordWrapper}>
+          <Input
+            label="Password"
+            value={password}
+            onChangeText={(value) => setPassword(value)}
+            isPassword={true}
+            placeholder="Password"
+            validateInput={validatePassword}
+          />
+          <TouchableOpacity onPress={() => {}} style={styles.forgotPasswordLink}>
+            <Text style={[styles.linkText1, { textAlign: "right" }]}>Forgot password?</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonWrapper}>
+          <Button text="Log in" onPress={handleSubmit} />
+        </View>
+        <TouchableOpacity style={styles.link} onPress={handleSignUp}>
+          <Text style={styles.linkText1}>New User? </Text>
+          <Text style={styles.linkText2}>Create Account</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.buttonWrapper}>
-        <Button text="Log in" onPress={handleSubmit} />
-      </View>
-      <TouchableOpacity style={styles.link} onPress={handleSignUp}>
-        <Text style={styles.linkText1}>New User? </Text>
-        <Text style={styles.linkText2}>Create Account</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: 32,
+    marginVertical: 50,
   },
   logoWrapper: {
-    paddingTop: 50,
-    justifyContent: "center",
     alignItems: "center",
     height: 200,
   },
   title: {
-    paddingVertical: 50,
     lineHeight: 36,
     fontFamily: "PoppinsMedium",
     fontSize: 24,
     color: colors.black,
     textAlign: "center",
+    marginBottom: 10,
   },
   forgotPasswordLink: {
-    marginTop: isIos ? 0 : 15,
+    marginTop: 20,
   },
   buttonWrapper: {
     marginTop: 50,
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
   link: {
     flexDirection: "row",
     justifyContent: "center",
-    marginVertical: 25,
+    marginTop: 35,
   },
   linkText1: {
     fontFamily: "PoppinsLight",

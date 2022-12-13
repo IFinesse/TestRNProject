@@ -4,7 +4,7 @@ import { colors } from "../../consts";
 import PhoneDropdown from "./PhoneDropdown";
 import Input from "./Input";
 
-const PhoneInput = (onSubmit) => {
+const PhoneInput = ({ onSubmit }) => {
   const [code, setCode] = useState("+1");
 
   const handleCode = (code) => {
@@ -36,8 +36,7 @@ const styles = StyleSheet.create({
   },
   phoneWrapper: {
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    marginTop: 15,
   },
 });
 

@@ -10,6 +10,9 @@ import {
 } from "react-native-confirmation-code-field";
 
 const styles = StyleSheet.create({
+  container: {
+    marginTop: 40,
+  },
   label: { fontFamily: "PoppinsMedium", fontSize: 14, color: colors.grey },
   codeFieldRoot: { marginTop: 15, justifyContent: "flex-start" },
   cellWrapper: {
@@ -44,7 +47,7 @@ const SMSInput = () => {
   });
 
   return (
-    <View style={styles.root}>
+    <View style={styles.container}>
       <Text style={styles.label}>Code</Text>
       <CodeField
         ref={ref}

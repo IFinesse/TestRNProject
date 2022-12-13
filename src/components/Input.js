@@ -60,12 +60,12 @@ const Input = ({
 
 const styles = StyleSheet.create({
   container: {
-    height: 52,
-    marginVertical: 22,
+    marginTop: 40,
   },
   label: {
     fontFamily: "PoppinsMedium",
     fontSize: 14,
+    lineHeight: 21,
     color: colors.grey,
     textTransform: "capitalize",
   },
@@ -76,7 +76,12 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: 12,
+    paddingTop: 15,
+    paddingBottom: 12,
+    fontFamily: "PoppinsMedium",
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.grey,
   },
   lockIcon: {
     alignSelf: "center",

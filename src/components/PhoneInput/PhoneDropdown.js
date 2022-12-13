@@ -86,8 +86,8 @@ const PhoneDropdown = ({ onSelect }) => {
 
   return (
     <View style={styles.container}>
-      {opened ? (
-        <Pressable style={styles.input} onPress={onOpen}>
+      {!opened ? (
+        <Pressable style={styles.input} onPress={() => onOpen()}>
           <Text style={styles.inputText}>{selected}</Text>
           <ArrowIconDown />
         </Pressable>
@@ -98,7 +98,7 @@ const PhoneDropdown = ({ onSelect }) => {
               styles.input,
               { borderBottomWidth: 0, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
             ]}
-            onPress={onOpen}
+            onPress={() => onOpen()}
           >
             <Text style={styles.inputText}>{selected}</Text>
             <ArrowIconUp />
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 15,
   },
   inputText: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: "PoppinsMedium",
     color: colors.grey,
   },

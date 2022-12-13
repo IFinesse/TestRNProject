@@ -11,28 +11,28 @@ const Input = ({ onBlur }) => {
   };
 
   const formatNumber = (value) => {
-    // return `${value[0]}${value[1]}${value[2]} ${value[3]}${value[4]}${value[5]}-${value[6]}${value[7]}-${value[8]}${value[9]}-${value[10]}${value[11]}-${value[12]}${value[13]}`;
-    return value;
+    let arr = value.split("");
+    if (arr[3] && arr[3] !== " ") arr.splice(3, 0, " ");
+    if (arr[7] && arr[7] !== "-") arr.splice(7, 0, "-");
+    if (arr[10] && arr[10] !== "-") arr.splice(10, 0, "-");
+    return arr.join("");
   };
 
   const validateNumber = (number) => number.length > 4 && number.length < 13;
 
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.inputWrapper,
-          { borderBottomColor: isError ? colors.red : colors.lightGrey },
-        ]}
-      >
+      <View style={[styles.inputWrapper, { borderColor: isError ? colors.red : colors.lightGrey }]}>
         <TextInput
           value={formatNumber(number)}
           onChangeText={setNumber}
-          style={[styles.input, { color: isError ? colors.red : colors.black }]}
+          style={[styles.input, { color: isError ? colors.red : colors.grey }]}
           onFocus={() => {
             setError(false);
           }}
-          onBlur={() => (validateNumber ? onBlur(number) : setError(true))}
+          onBlur={() => (validateNumber(number) ? onBlur(number) : setError(true))}
+          keyboardType="number-pad"
+          maxLength={13}
         />
       </View>
       {isError ? <Text style={styles.errorText}>The value is invalid</Text> : null}
@@ -43,8 +43,6 @@ const Input = ({ onBlur }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: 52,
-    marginVertical: 22,
   },
   inputWrapper: {
     flexDirection: "row",
@@ -55,8 +53,11 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
   },
   input: {
+    paddingLeft: 15,
     flex: 1,
-    paddingVertical: 12,
+    fontSize: 16,
+    fontFamily: "PoppinsMedium",
+    // color: colors.grey,
   },
   errorText: {
     fontFamily: "PoppinsMedium",
