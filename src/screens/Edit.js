@@ -5,6 +5,7 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import { validateEmail, validatePassword } from "../utils";
 import { EditIcon } from "../components/Icons";
+import ModalSelector from "react-native-modal-selector";
 
 const formatPhone = (phone) => {
   return phone;
@@ -35,6 +36,20 @@ const Edit = ({ navigation }) => {
     navigation.navigate("Login");
   };
 
+  const uploadPhotoSelectorData = [
+    { key: 1, label: "Take Photo" },
+    { key: 2, label: "Choose Photo" },
+  ];
+
+  const choosePhoto = () => {
+    return "1";
+  };
+
+  const takePhoto = () => {
+    return "2";
+  };
+
+  console.log("bla");
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -46,15 +61,34 @@ const Edit = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.imageContainer}>
-          <TouchableOpacity onPress={() => {}} style={styles.imageWrapper}>
-            {/* {true ? (
+          <ModalSelector
+            data={uploadPhotoSelectorData}
+            // initValue="Choose Photo"
+            visible={true}
+            onModalClose={(option) => {
+              option.label === "Choose Photo"
+                ? console.log(choosePhoto())
+                : console.log(takePhoto());
+            }}
+            cancelText="Cancel"
+            overlayStyle={{ justifyContent: "flex-end" }}
+            optionStyle={{ padding: 20 }}
+            optionContainerStyle={{ borderRadius: 10 }}
+            cancelStyle={{ padding: 20 }}
+            cancelTextStyle={{ fontFamily: "PoppinsMedium", fontSize: 16, color: colors.black }}
+            backdropPressToClose={true}
+            animationType="fade"
+          >
+            <TouchableOpacity onPress={() => {}} style={styles.imageWrapper}>
+              {/* {true ? (
               <Image style={styles.image} source={require("../../assets/emptyPhoto.png")} />
             ) : null} */}
-            <Image style={styles.image} source={require("../../assets/emptyPhoto.png")} />
-            <View style={styles.editIconWrapper}>
-              <EditIcon />
-            </View>
-          </TouchableOpacity>
+              <Image style={styles.image} source={require("../../assets/emptyPhoto.png")} />
+              <View style={styles.editIconWrapper}>
+                <EditIcon />
+              </View>
+            </TouchableOpacity>
+          </ModalSelector>
         </View>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.position}>{position}</Text>
