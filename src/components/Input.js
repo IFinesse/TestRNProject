@@ -48,7 +48,7 @@ const Input = ({
       {isError ? (
         <Text style={styles.errorText}>
           {isPassword
-            ? "The password should contain more than 7 symbols"
+            ? "The password should contain at least 8 symbols"
             : isConfirmPassword
             ? "The password isn't equal to the field above"
             : "The value is invalid"}

@@ -10,7 +10,7 @@ export default RootNavigation = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="SignUp"
+        initialRouteName="Edit"
         screenOptions={{
           headerShown: false,
         }}
