@@ -1,7 +1,7 @@
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { colors } from "../consts";
-import { EyeClosed, EyeOpened } from "./EyeIcons";
+import { EyeClosed, EyeOpened } from "./Icons";
 
 const Input = ({
   label,

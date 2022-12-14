@@ -1,14 +1,22 @@
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/Login";
 import SignUpScreen from "../screens/SignUp";
 import EditScreen from "../screens/Edit";
 
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: "#F5F5F5",
+  },
+};
+
 const Stack = createNativeStackNavigator();
 
 export default RootNavigation = () => {
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={MyTheme}>
       <Stack.Navigator
         initialRouteName="Edit"
         screenOptions={{
