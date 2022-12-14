@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
 import React, { useState } from "react";
 import { colors } from "../consts";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { validateEmail, validatePassword } from "../utils";
+import { EditIcon } from "../components/Icons";
 
 const formatPhone = (phone) => {
   return phone;
@@ -13,20 +14,16 @@ const validatePhone = (phone) => {
   return phone;
 };
 
+const validateName = (name) => {
+  return name;
+};
+
 const Edit = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [position, setPosition] = useState("");
   const [skype, setSkype] = useState("");
-
-  const handleLogin = () => {
-    navigation.navigate("Login");
-  };
-
-  const validateName = () => {
-    return name;
-  };
 
   const handleSave = () => {
     if (name && validatePhone(phone) && validateEmail(email)) {
@@ -48,6 +45,19 @@ const Edit = ({ navigation }) => {
             <Text style={styles.logOutText}>Log out</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.imageContainer}>
+          <TouchableOpacity onPress={() => {}} style={styles.imageWrapper}>
+            {/* {true ? (
+              <Image style={styles.image} source={require("../../assets/emptyPhoto.png")} />
+            ) : null} */}
+            <Image style={styles.image} source={require("../../assets/emptyPhoto.png")} />
+            <View style={styles.editIconWrapper}>
+              <EditIcon />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.position}>{position}</Text>
         <Input
           label="Name"
           value={name}
@@ -114,12 +124,52 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.orange,
   },
-  title: {
+  imageContainer: {
+    marginTop: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imageWrapper: {
+    position: "relative",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+  },
+  editIconWrapper: {
+    position: "absolute",
+    left: 45,
+    top: 45,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    backgroundColor: colors.lightGrey2,
+  },
+  name: {
+    marginTop: 10,
     lineHeight: 36,
     fontFamily: "PoppinsMedium",
     fontSize: 24,
     color: colors.black,
     textAlign: "center",
+  },
+  position: {
+    marginTop: 3,
+    lineHeight: 21,
+    fontFamily: "PoppinsMedium",
+    fontSize: 14,
+    color: colors.grey,
+    textAlign: "center",
+    textTransform: "capitalize",
+    marginBottom: -10,
   },
   buttonWrapper: {
     marginTop: 50,
