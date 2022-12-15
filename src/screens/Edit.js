@@ -1,12 +1,14 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
-import React, { useState } from "react";
-import { colors } from "../consts";
+import React, { useState, useRef } from "react";
+import { colors, SCREEN_WIDTH } from "../consts";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { validateEmail, validatePassword } from "../utils";
 import { EditIcon } from "../components/Icons";
 import ModalSelector from "react-native-modal-selector";
 import * as ImagePicker from "expo-image-picker";
+import { Camera, CameraType } from "expo-camera";
+import CameraWrapper from "../components/Camera";
 
 const formatPhone = (phone) => {
   return phone;
@@ -21,6 +23,7 @@ const validateName = (name) => {
 };
 
 const Edit = ({ navigation }) => {
+  const [camera, setCamera] = useState(false);
   const [image, setImage] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -59,21 +62,25 @@ const Edit = ({ navigation }) => {
     }
   };
 
-  const takePhoto = async () => {
-    // let status = ImagePicker.PermissionStatus;
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    console.log("bla", status, status === ImagePicker.PermissionStatus.GRANTED);
+  const onOpenCamera = async () => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
     if (status === ImagePicker.PermissionStatus.GRANTED) {
-      console.log("bla inside");
-      let result = await ImagePicker.launchCameraAsync();
-
-      console.log({ result });
-
-      if (!result.canceled) {
-        setImage(result.assets[0].uri);
-      }
+      setCamera(true);
+    } else {
+      alert(
+        "Access to camera is denied, please allow using camera for the application in settings"
+      );
     }
   };
+
+  const handleSavePhoto = (photo) => {
+    setImage(photo.uri);
+    setCamera(null);
+  };
+
+  if (camera) {
+    return <CameraWrapper savePhoto={handleSavePhoto} goBack={() => setCamera(null)} />;
+  }
 
   return (
     <ScrollView>
@@ -89,7 +96,7 @@ const Edit = ({ navigation }) => {
           <ModalSelector
             data={uploadPhotoSelectorData}
             onModalClose={(option) => {
-              option.label === "Choose Photo" ? choosePhoto() : takePhoto();
+              option.label === "Choose Photo" ? choosePhoto() : onOpenCamera();
             }}
             cancelText="Cancel"
             overlayStyle={{ justifyContent: "flex-end" }}
