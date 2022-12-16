@@ -1,13 +1,16 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import React, { useState, useRef } from "react";
-import { colors, SCREEN_WIDTH } from "../../consts";
+import React from "react";
+import { colors, SCREEN_WIDTH, SCREEN_HEIGHT } from "../../consts";
 
-const ImageContainer = ({ photo, onSave, onRetake, onGoBack }) => {
-  // const [photo, setPhoto] = useState(null);
-
+const ImageContainer = ({ photo, onSave, onRetake }) => {
   return (
     <View style={styles.container}>
-      <Image source={{ uri: "data:image/jpg;base64," + photo.base64 }} style={styles.preview} />
+      <Image
+        source={{ uri: photo.uri }}
+        width={SCREEN_WIDTH}
+        height={SCREEN_HEIGHT}
+        style={styles.preview}
+      />
       <View style={styles.wrapper}>
         <TouchableOpacity onPress={onRetake} style={styles.buttonWrapper}>
           <Text style={styles.text}>Retake</Text>

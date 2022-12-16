@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
-import React, { useState, useRef } from "react";
-import { colors, SCREEN_WIDTH } from "../consts";
+import React, { useRef, useState } from "react";
+import { colors } from "../consts";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { validateEmail, validatePassword } from "../utils";
@@ -9,6 +9,7 @@ import ModalSelector from "react-native-modal-selector";
 import * as ImagePicker from "expo-image-picker";
 import { Camera, CameraType } from "expo-camera";
 import CameraWrapper from "../components/Camera";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const formatPhone = (phone) => {
   return phone;
@@ -23,6 +24,7 @@ const validateName = (name) => {
 };
 
 const Edit = ({ navigation }) => {
+  const modalRef = useRef();
   const [camera, setCamera] = useState(false);
   const [image, setImage] = useState(null);
   const [name, setName] = useState("");
@@ -46,6 +48,12 @@ const Edit = ({ navigation }) => {
     { key: 2, label: "Choose Photo" },
   ];
 
+  const handleEditPhoto = () => {
+    console.log("bla edit");
+    console.log({ modalRef });
+    modalRef.current.open();
+  };
+
   const choosePhoto = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -54,9 +62,6 @@ const Edit = ({ navigation }) => {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
@@ -94,9 +99,14 @@ const Edit = ({ navigation }) => {
         </View>
         <View style={styles.imageContainer}>
           <ModalSelector
+            ref={modalRef}
             data={uploadPhotoSelectorData}
             onModalClose={(option) => {
-              option.label === "Choose Photo" ? choosePhoto() : onOpenCamera();
+              option.label === "Choose Photo"
+                ? choosePhoto()
+                : option.label === "Take Photo"
+                ? onOpenCamera()
+                : null;
             }}
             cancelText="Cancel"
             overlayStyle={{ justifyContent: "flex-end" }}
@@ -111,10 +121,13 @@ const Edit = ({ navigation }) => {
               {image ? (
                 <Image style={styles.image} source={{ uri: image }} />
               ) : (
-                <Image
-                  style={[styles.image, { borderWidth: 1 }]}
-                  source={require("../../assets/emptyPhoto.png")}
-                />
+                // <Image
+                //   style={[styles.image, { borderWidth: 1 }]}
+                //   source={require("../../assets/emptyPhoto.png")}
+                // />
+                <View style={styles.emptyPhoto}>
+                  <MaterialIcons name="add-a-photo" size={24} color={colors.grey} />
+                </View>
               )}
 
               <View style={styles.editIconWrapper}>
@@ -207,6 +220,16 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: 35,
     borderColor: colors.lightGrey,
+  },
+  emptyPhoto: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    borderWidth: 2,
+    backgroundColor: "rgba(0,0,0, 0.1)",
+    borderColor: colors.lightGrey,
+    justifyContent: "center",
+    alignItems: "center",
   },
   editIconWrapper: {
     position: "absolute",
