@@ -7,7 +7,7 @@ import { validateEmail, validatePassword } from "../utils";
 import { EditIcon } from "../components/Icons";
 import ModalSelector from "react-native-modal-selector";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, CameraType } from "expo-camera";
+import { Camera } from "expo-camera";
 import CameraWrapper from "../components/Camera";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -47,12 +47,6 @@ const Edit = ({ navigation }) => {
     { key: 1, label: "Take Photo" },
     { key: 2, label: "Choose Photo" },
   ];
-
-  const handleEditPhoto = () => {
-    console.log("bla edit");
-    console.log({ modalRef });
-    modalRef.current.open();
-  };
 
   const choosePhoto = async () => {
     // No permissions request is necessary for launching the image library
