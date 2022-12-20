@@ -1,10 +1,15 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { colors } from "../consts";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { validateEmail, validatePassword } from "../utils";
 import { EditIcon } from "../components/Icons";
+import ModalSelector from "react-native-modal-selector";
+import * as ImagePicker from "expo-image-picker";
+import { Camera, CameraType } from "expo-camera";
+import CameraWrapper from "../components/Camera";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const formatPhone = (phone) => {
   return phone;
@@ -19,6 +24,9 @@ const validateName = (name) => {
 };
 
 const Edit = ({ navigation }) => {
+  const modalRef = useRef();
+  const [camera, setCamera] = useState(false);
+  const [image, setImage] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -35,6 +43,50 @@ const Edit = ({ navigation }) => {
     navigation.navigate("Login");
   };
 
+  const uploadPhotoSelectorData = [
+    { key: 1, label: "Take Photo" },
+    { key: 2, label: "Choose Photo" },
+  ];
+
+  const handleEditPhoto = () => {
+    console.log("bla edit");
+    console.log({ modalRef });
+    modalRef.current.open();
+  };
+
+  const choosePhoto = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const onOpenCamera = async () => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    if (status === ImagePicker.PermissionStatus.GRANTED) {
+      setCamera(true);
+    } else {
+      alert(
+        "Access to camera is denied, please allow using camera for the application in settings"
+      );
+    }
+  };
+
+  const handleSavePhoto = (photo) => {
+    setImage(photo.uri);
+    setCamera(null);
+  };
+
+  if (camera) {
+    return <CameraWrapper savePhoto={handleSavePhoto} goBack={() => setCamera(null)} />;
+  }
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -46,15 +98,43 @@ const Edit = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.imageContainer}>
-          <TouchableOpacity onPress={() => {}} style={styles.imageWrapper}>
-            {/* {true ? (
-              <Image style={styles.image} source={require("../../assets/emptyPhoto.png")} />
-            ) : null} */}
-            <Image style={styles.image} source={require("../../assets/emptyPhoto.png")} />
-            <View style={styles.editIconWrapper}>
-              <EditIcon />
-            </View>
-          </TouchableOpacity>
+          <ModalSelector
+            ref={modalRef}
+            data={uploadPhotoSelectorData}
+            onModalClose={(option) => {
+              option.label === "Choose Photo"
+                ? choosePhoto()
+                : option.label === "Take Photo"
+                ? onOpenCamera()
+                : null;
+            }}
+            cancelText="Cancel"
+            overlayStyle={{ justifyContent: "flex-end" }}
+            optionStyle={{ padding: 20 }}
+            optionContainerStyle={{ borderRadius: 10 }}
+            cancelStyle={{ padding: 20 }}
+            cancelTextStyle={{ fontFamily: "PoppinsMedium", fontSize: 16, color: colors.black }}
+            backdropPressToClose={true}
+            animationType="fade"
+          >
+            <TouchableOpacity onPress={() => {}} style={styles.imageWrapper}>
+              {image ? (
+                <Image style={styles.image} source={{ uri: image }} />
+              ) : (
+                // <Image
+                //   style={[styles.image, { borderWidth: 1 }]}
+                //   source={require("../../assets/emptyPhoto.png")}
+                // />
+                <View style={styles.emptyPhoto}>
+                  <MaterialIcons name="add-a-photo" size={24} color={colors.grey} />
+                </View>
+              )}
+
+              <View style={styles.editIconWrapper}>
+                <EditIcon />
+              </View>
+            </TouchableOpacity>
+          </ModalSelector>
         </View>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.position}>{position}</Text>
@@ -139,8 +219,17 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    borderWidth: 1,
     borderColor: colors.lightGrey,
+  },
+  emptyPhoto: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    borderWidth: 2,
+    backgroundColor: "rgba(0,0,0, 0.1)",
+    borderColor: colors.lightGrey,
+    justifyContent: "center",
+    alignItems: "center",
   },
   editIconWrapper: {
     position: "absolute",
