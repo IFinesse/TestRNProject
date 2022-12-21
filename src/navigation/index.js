@@ -19,7 +19,7 @@ export default RootNavigation = ({ isLoggedIn }) => {
     <NavigationContainer theme={MyTheme}>
       {!isLoggedIn ? (
         <Stack.Navigator
-          initialRouteName="SignUp"
+          initialRouteName="Login"
           screenOptions={{
             headerShown: false,
           }}

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { colors } from "../consts";
 import Logo from "../components/Logo";
 import Input from "../components/Input";
@@ -7,11 +7,35 @@ import Button from "../components/Button";
 import { isIos } from "../utils";
 import { validateEmail, validatePassword } from "../utils";
 
+import * as SQLite from "expo-sqlite";
+import { UserContext } from "../../App";
+
+const db = SQLite.openDatabase("users.db");
+
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setLoggedIn } = useContext(UserContext);
+
   const handleSubmit = () => {
-    console.log("submit");
+    if (validateEmail(email) && validatePassword(password)) {
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT password FROM users WHERE email = ?",
+          [email],
+          (txObj, resultSet) => {
+            if (resultSet.rows._array[0]?.password === password) {
+              setLoggedIn(true);
+              setEmail("");
+              setPassword("");
+            } else {
+              alert("the email/password is invalid");
+            }
+          },
+          (txObj, error) => console.log(error)
+        );
+      });
+    }
   };
   const handleSignUp = () => {
     navigation.navigate("SignUp");

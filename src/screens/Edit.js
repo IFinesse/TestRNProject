@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { colors } from "../consts";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -10,6 +10,8 @@ import * as ImagePicker from "expo-image-picker";
 import { Camera } from "expo-camera";
 import CameraWrapper from "../components/Camera";
 import { MaterialIcons } from "@expo/vector-icons";
+
+import { UserContext } from "../../App";
 
 const formatPhone = (phone) => {
   return phone;
@@ -33,6 +35,8 @@ const Edit = ({ navigation }) => {
   const [position, setPosition] = useState("");
   const [skype, setSkype] = useState("");
 
+  const { setLoggedIn } = useContext(UserContext);
+
   const handleSave = () => {
     if (name && validatePhone(phone) && validateEmail(email)) {
       console.log("submit");
@@ -40,7 +44,7 @@ const Edit = ({ navigation }) => {
   };
 
   const handleLogOut = () => {
-    navigation.navigate("Login");
+    setLoggedIn(false);
   };
 
   const uploadPhotoSelectorData = [

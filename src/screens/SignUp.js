@@ -12,24 +12,22 @@ import * as SQLite from "expo-sqlite";
 
 import { UserContext } from "../../App";
 
-const db = SQLite.openDatabase("users1.db");
+const db = SQLite.openDatabase("users.db");
 
-const checkExistingUser = (email) => {
-  db.transaction((tx) => {
+const checkExistingUser = async (email) => {
+  let exists = null;
+  await db.transaction((tx) => {
     tx.executeSql(
       "SELECT * FROM users WHERE email = ?",
       [email],
       (txObj, resultSet) => {
-        console.log(resultSet);
-        return true;
+        exists = resultSet.rows._array.length > 0;
       },
       (txObj, error) => console.log(error)
     );
   });
+  return exists;
 };
-
-checkExistingUser("ifinesse2406@gmail.com");
-console.log("bla", checkExistingUser("ifinesse2406@gmail.com"));
 
 const SignUp = ({ navigation }) => {
   const [phone, setPhone] = useState(["+1", ""]);
@@ -52,15 +50,18 @@ const SignUp = ({ navigation }) => {
     return password === confirmPassword;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (
       name &&
       validateEmail(email) &&
       validatePassword(password) &&
       validateConfirmPassword(confirmPassword)
     ) {
-      checkExistingUser(email);
-      createUser();
+      if (await checkExistingUser(email)) {
+        alert(email + " is already registered");
+      } else {
+        createUser();
+      }
     }
   };
 
