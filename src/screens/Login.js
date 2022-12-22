@@ -15,7 +15,7 @@ const db = SQLite.openDatabase("users.db");
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setLoggedIn } = useContext(UserContext);
+  const { setLoggedIn, setUserEmail } = useContext(UserContext);
 
   const handleSubmit = () => {
     if (validateEmail(email) && validatePassword(password)) {
@@ -25,6 +25,7 @@ const Login = ({ navigation }) => {
           [email],
           (txObj, resultSet) => {
             if (resultSet.rows._array[0]?.password === password) {
+              setUserEmail(email);
               setLoggedIn(true);
               setEmail("");
               setPassword("");

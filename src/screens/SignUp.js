@@ -36,7 +36,7 @@ const SignUp = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { setLoggedIn } = useContext(UserContext);
+  const { setLoggedIn, setUserEmail } = useContext(UserContext);
 
   const handleLogin = () => {
     navigation.navigate("Login");
@@ -71,6 +71,7 @@ const SignUp = ({ navigation }) => {
         "INSERT INTO users (phone, name, email, password) values (?, ?, ?, ?)",
         [phone[0] + phone[1], name, email, password],
         (txObj, resultSet) => {
+          setUserEmail(email);
           setLoggedIn(true);
         },
         (txObj, error) => console.log(error)

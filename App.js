@@ -10,6 +10,7 @@ export const UserContext = createContext();
 
 export default function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   const [fontsLoaded] = useFonts({
     PoppinsMedium: require("./assets/fonts/Poppins-Medium.ttf"),
     PoppinsLight: require("./assets/fonts/Poppins-Light.ttf"),
@@ -25,7 +26,7 @@ export default function App() {
   }, []);
 
   return fontsLoaded ? (
-    <UserContext.Provider value={{ isLoggedIn, setLoggedIn }}>
+    <UserContext.Provider value={{ isLoggedIn, setLoggedIn, userEmail, setUserEmail }}>
       <SafeAreaProvider>
         <RootNavigation isLoggedIn={isLoggedIn} />
       </SafeAreaProvider>
