@@ -1,9 +1,17 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  KeyboardAvoidingView,
+} from "react-native";
 import React, { useRef, useState, useContext, useEffect } from "react";
 import { colors } from "../consts";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { validateEmail, validatePassword } from "../utils";
+import { isIos, validateEmail, validatePassword } from "../utils";
 import { EditIcon } from "../components/Icons";
 import ModalSelector from "react-native-modal-selector";
 import * as ImagePicker from "expo-image-picker";
@@ -119,97 +127,99 @@ const Edit = ({ navigation }) => {
   }
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={{ height: 0 }}>Log out</Text>
-          <Text style={styles.headerText}>Edit Profile</Text>
-          <TouchableOpacity onPress={handleLogOut}>
-            <Text style={styles.logOutText}>Log out</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.imageContainer}>
-          <ModalSelector
-            ref={modalRef}
-            data={uploadPhotoSelectorData}
-            onModalClose={(option) => {
-              option.label === "Choose Photo"
-                ? choosePhoto()
-                : option.label === "Take Photo"
-                ? onOpenCamera()
-                : null;
-            }}
-            cancelText="Cancel"
-            overlayStyle={{ justifyContent: "flex-end" }}
-            optionStyle={{ padding: 20 }}
-            optionContainerStyle={{ borderRadius: 10 }}
-            cancelStyle={{ padding: 20 }}
-            cancelTextStyle={{ fontFamily: "PoppinsMedium", fontSize: 16, color: colors.black }}
-            backdropPressToClose={true}
-            animationType="fade"
-          >
-            <TouchableOpacity onPress={() => {}} style={styles.imageWrapper}>
-              {image ? (
-                <Image style={styles.image} source={{ uri: image }} />
-              ) : (
-                // <Image
-                //   style={[styles.image, { borderWidth: 1 }]}
-                //   source={require("../../assets/emptyPhoto.png")}
-                // />
-                <View style={styles.emptyPhoto}>
-                  <MaterialIcons name="add-a-photo" size={24} color={colors.grey} />
-                </View>
-              )}
-
-              <View style={styles.editIconWrapper}>
-                <EditIcon />
-              </View>
+    <KeyboardAvoidingView behavior={isIos ? "padding" : "height"}>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={{ height: 0 }}>Log out</Text>
+            <Text style={styles.headerText}>Edit Profile</Text>
+            <TouchableOpacity onPress={handleLogOut}>
+              <Text style={styles.logOutText}>Log out</Text>
             </TouchableOpacity>
-          </ModalSelector>
+          </View>
+          <View style={styles.imageContainer}>
+            <ModalSelector
+              ref={modalRef}
+              data={uploadPhotoSelectorData}
+              onModalClose={(option) => {
+                option.label === "Choose Photo"
+                  ? choosePhoto()
+                  : option.label === "Take Photo"
+                  ? onOpenCamera()
+                  : null;
+              }}
+              cancelText="Cancel"
+              overlayStyle={{ justifyContent: "flex-end" }}
+              optionStyle={{ padding: 20 }}
+              optionContainerStyle={{ borderRadius: 10 }}
+              cancelStyle={{ padding: 20 }}
+              cancelTextStyle={{ fontFamily: "PoppinsMedium", fontSize: 16, color: colors.black }}
+              backdropPressToClose={true}
+              animationType="fade"
+            >
+              <TouchableOpacity onPress={() => {}} style={styles.imageWrapper}>
+                {image ? (
+                  <Image style={styles.image} source={{ uri: image }} />
+                ) : (
+                  // <Image
+                  //   style={[styles.image, { borderWidth: 1 }]}
+                  //   source={require("../../assets/emptyPhoto.png")}
+                  // />
+                  <View style={styles.emptyPhoto}>
+                    <MaterialIcons name="add-a-photo" size={24} color={colors.grey} />
+                  </View>
+                )}
+
+                <View style={styles.editIconWrapper}>
+                  <EditIcon />
+                </View>
+              </TouchableOpacity>
+            </ModalSelector>
+          </View>
+          <Text style={styles.name}>{name}</Text>
+          <Text style={styles.position}>{position}</Text>
+          <Input
+            label="Name"
+            value={name}
+            onChangeText={(value) => setName(value)}
+            placeholder="Name"
+            validateInput={validateName}
+          />
+          <Input
+            label="Email"
+            value={email}
+            onChangeText={(value) => setEmail(value)}
+            placeholder="Email"
+            validateInput={validateEmail}
+            keyboardType="email-address"
+          />
+          <Input
+            label="Phone"
+            value={formatPhone(phone)}
+            onChangeText={(value) => setPhone(value)}
+            placeholder="Phone"
+            validateInput={validatePassword}
+          />
+          <Input
+            label="Position"
+            value={position}
+            onChangeText={(value) => setPosition(value)}
+            placeholder="Position"
+            validateInput={validateName}
+          />
+          <Input
+            label="Skype"
+            value={skype}
+            onChangeText={(value) => setSkype(value)}
+            placeholder="Skype"
+            validateInput={validateName}
+          />
+          <View style={styles.buttonWrapper}>
+            <Button text="Save" onPress={handleSave} />
+          </View>
         </View>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.position}>{position}</Text>
-        <Input
-          label="Name"
-          value={name}
-          onChangeText={(value) => setName(value)}
-          placeholder="Name"
-          validateInput={validateName}
-        />
-        <Input
-          label="Email"
-          value={email}
-          onChangeText={(value) => setEmail(value)}
-          placeholder="Email"
-          validateInput={validateEmail}
-          keyboardType="email-address"
-        />
-        <Input
-          label="Phone"
-          value={formatPhone(phone)}
-          onChangeText={(value) => setPhone(value)}
-          placeholder="Phone"
-          validateInput={validatePassword}
-        />
-        <Input
-          label="Position"
-          value={position}
-          onChangeText={(value) => setPosition(value)}
-          placeholder="Position"
-          validateInput={validateName}
-        />
-        <Input
-          label="Skype"
-          value={skype}
-          onChangeText={(value) => setSkype(value)}
-          placeholder="Skype"
-          validateInput={validateName}
-        />
-        <View style={styles.buttonWrapper}>
-          <Button text="Save" onPress={handleSave} />
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
