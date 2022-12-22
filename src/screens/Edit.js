@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext, useEffect } from "react";
 import { colors } from "../consts";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -7,9 +7,14 @@ import { validateEmail, validatePassword } from "../utils";
 import { EditIcon } from "../components/Icons";
 import ModalSelector from "react-native-modal-selector";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, CameraType } from "expo-camera";
+import { Camera } from "expo-camera";
 import CameraWrapper from "../components/Camera";
 import { MaterialIcons } from "@expo/vector-icons";
+import * as SQLite from "expo-sqlite";
+
+const db = SQLite.openDatabase("users.db");
+
+import { UserContext } from "../../App";
 
 const formatPhone = (phone) => {
   return phone;
@@ -33,26 +38,52 @@ const Edit = ({ navigation }) => {
   const [position, setPosition] = useState("");
   const [skype, setSkype] = useState("");
 
+  const { setLoggedIn, userEmail } = useContext(UserContext);
+
+  useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM users WHERE email = ?",
+        [userEmail],
+        (txObj, resultSet) => {
+          console.log({ resultSet, userEmail });
+          setName(resultSet.rows._array[0]?.name);
+          setEmail(resultSet.rows._array[0]?.email);
+          setPhone(resultSet.rows._array[0]?.phone);
+          setPosition(resultSet.rows._array[0]?.position);
+          setSkype(resultSet.rows._array[0]?.skype);
+          setImage(resultSet.rows._array[0]?.image);
+        },
+        (txObj, error) => console.log(error)
+      );
+    });
+  }, []);
+
   const handleSave = () => {
     if (name && validatePhone(phone) && validateEmail(email)) {
-      console.log("submit");
+      db.transaction((tx) => {
+        tx.executeSql(
+          "UPDATE users SET name = ?, email = ?, phone = ?, position = ?, skype = ?, image = ? WHERE email = ?",
+          [name, email, phone, position, skype, image, userEmail],
+          (txObj, resultSet) => {
+            console.log("success");
+          },
+          (txObj, error) => console.log(error)
+        );
+      });
+    } else {
+      alert("please check if all fields are valid");
     }
   };
 
   const handleLogOut = () => {
-    navigation.navigate("Login");
+    setLoggedIn(false);
   };
 
   const uploadPhotoSelectorData = [
     { key: 1, label: "Take Photo" },
     { key: 2, label: "Choose Photo" },
   ];
-
-  const handleEditPhoto = () => {
-    console.log("bla edit");
-    console.log({ modalRef });
-    modalRef.current.open();
-  };
 
   const choosePhoto = async () => {
     // No permissions request is necessary for launching the image library

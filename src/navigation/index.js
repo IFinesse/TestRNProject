@@ -14,19 +14,29 @@ const MyTheme = {
 
 const Stack = createNativeStackNavigator();
 
-export default RootNavigation = () => {
+export default RootNavigation = ({ isLoggedIn }) => {
   return (
     <NavigationContainer theme={MyTheme}>
-      <Stack.Navigator
-        initialRouteName="Edit"
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="Edit" component={EditScreen} />
-      </Stack.Navigator>
+      {!isLoggedIn ? (
+        <Stack.Navigator
+          initialRouteName="Login"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="SignUp" component={SignUpScreen} />
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator
+          initialRouteName="Edit"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="Edit" component={EditScreen} />
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 };

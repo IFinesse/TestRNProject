@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { colors } from "../consts";
 import Logo from "../components/Logo";
 import Input from "../components/Input";
@@ -8,12 +8,35 @@ import { validateEmail, validatePassword } from "../utils";
 import SMSInput from "../components/SMSInput";
 import PhoneInput from "../components/PhoneInput";
 
+import * as SQLite from "expo-sqlite";
+
+import { UserContext } from "../../App";
+
+const db = SQLite.openDatabase("users.db");
+
+const checkExistingUser = async (email) => {
+  let exists = null;
+  await db.transaction((tx) => {
+    tx.executeSql(
+      "SELECT * FROM users WHERE email = ?",
+      [email],
+      (txObj, resultSet) => {
+        exists = resultSet.rows._array.length > 0;
+      },
+      (txObj, error) => console.log(error)
+    );
+  });
+  return exists;
+};
+
 const SignUp = ({ navigation }) => {
-  const [phoneCode, setPhoneCode] = useState(["+1", ""]);
+  const [phone, setPhone] = useState(["+1", ""]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const { setLoggedIn, setUserEmail } = useContext(UserContext);
 
   const handleLogin = () => {
     navigation.navigate("Login");
@@ -27,15 +50,33 @@ const SignUp = ({ navigation }) => {
     return password === confirmPassword;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (
       name &&
       validateEmail(email) &&
       validatePassword(password) &&
       validateConfirmPassword(confirmPassword)
     ) {
-      console.log("submit");
+      if (await checkExistingUser(email)) {
+        alert(email + " is already registered");
+      } else {
+        createUser();
+      }
     }
+  };
+
+  const createUser = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "INSERT INTO users (phone, name, email, password) values (?, ?, ?, ?)",
+        [phone[0] + phone[1], name, email, password],
+        (txObj, resultSet) => {
+          setUserEmail(email);
+          setLoggedIn(true);
+        },
+        (txObj, error) => console.log(error)
+      );
+    });
   };
 
   return (
@@ -46,7 +87,7 @@ const SignUp = ({ navigation }) => {
         </View>
         <Text style={styles.title}>Sign Up To Woorkroom</Text>
         <View style={styles.phoneWrapper}>
-          <PhoneInput onSubmit={(code) => setPhoneCode(code)} />
+          <PhoneInput onSubmit={(code) => setPhone(code)} />
         </View>
         <SMSInput />
         <Input
