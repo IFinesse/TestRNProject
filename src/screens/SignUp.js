@@ -14,10 +14,9 @@ import Button from "../components/Button";
 import { isIos, validateEmail, validatePassword } from "../utils";
 import SMSInput from "../components/SMSInput";
 import PhoneInput from "../components/PhoneInput";
-
 import * as SQLite from "expo-sqlite";
-
 import { UserContext } from "../../App";
+import showMessage from "../utils/message";
 
 const db = SQLite.openDatabase("users.db");
 
@@ -37,6 +36,7 @@ const checkExistingUser = async (email) => {
 };
 
 const SignUp = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
   const [phone, setPhone] = useState(["+1", ""]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -65,7 +65,10 @@ const SignUp = ({ navigation }) => {
       validateConfirmPassword(confirmPassword)
     ) {
       if (await checkExistingUser(email)) {
-        alert(email + " is already registered");
+        showMessage({
+          message: email + " is already registered",
+          type: "danger",
+        });
       } else {
         createUser();
       }
@@ -73,6 +76,7 @@ const SignUp = ({ navigation }) => {
   };
 
   const createUser = () => {
+    setLoading(true);
     db.transaction((tx) => {
       tx.executeSql(
         "INSERT INTO users (phone, name, email, password) values (?, ?, ?, ?)",
@@ -80,8 +84,15 @@ const SignUp = ({ navigation }) => {
         (txObj, resultSet) => {
           setUserEmail(email);
           setLoggedIn(true);
+          setLoading(false);
         },
-        (txObj, error) => console.log(error)
+        (txObj, error) => {
+          showMessage({
+            message: "Something went wrong",
+            type: "danger",
+          });
+          setLoading(false);
+        }
       );
     });
   };
@@ -130,7 +141,7 @@ const SignUp = ({ navigation }) => {
             validateInput={validateConfirmPassword}
           />
           <View style={styles.buttonWrapper}>
-            <Button text="Next" onPress={handleSubmit} />
+            <Button text="Next" onPress={handleSubmit} loading={loading} />
           </View>
           <TouchableOpacity style={styles.link} onPress={handleLogin}>
             <Text style={styles.linkText1}>Have Account? </Text>

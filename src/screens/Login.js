@@ -12,19 +12,21 @@ import Logo from "../components/Logo";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { isIos, validateEmail, validatePassword } from "../utils";
-
 import * as SQLite from "expo-sqlite";
 import { UserContext } from "../../App";
+import showMessage from "../utils/message";
 
 const db = SQLite.openDatabase("users.db");
 
 const Login = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setLoggedIn, setUserEmail } = useContext(UserContext);
 
   const handleSubmit = () => {
     if (validateEmail(email) && validatePassword(password)) {
+      setLoading(true);
       db.transaction((tx) => {
         tx.executeSql(
           "SELECT password FROM users WHERE email = ?",
@@ -36,10 +38,20 @@ const Login = ({ navigation }) => {
               setEmail("");
               setPassword("");
             } else {
-              alert("the email/password is invalid");
+              showMessage({
+                message: "the email/password is invalid",
+                type: "danger",
+              });
             }
+            setLoading(false);
           },
-          (txObj, error) => console.log(error)
+          (txObj, error) => {
+            showMessage({
+              message: "Something went wrong",
+              type: "danger",
+            });
+            setLoading(false);
+          }
         );
       });
     }
@@ -78,7 +90,7 @@ const Login = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           <View style={styles.buttonWrapper}>
-            <Button text="Log in" onPress={handleSubmit} />
+            <Button text="Log in" onPress={handleSubmit} loading={loading} />
           </View>
           <TouchableOpacity style={styles.link} onPress={handleSignUp}>
             <Text style={styles.linkText1}>New User? </Text>

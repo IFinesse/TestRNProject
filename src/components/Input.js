@@ -12,7 +12,7 @@ const Input = ({
   validateInput,
   ...props
 }) => {
-  const [secure, setSecure] = useState(isPassword);
+  const [secure, setSecure] = useState(isPassword || isConfirmPassword);
   const [isError, setError] = useState(false);
 
   const onBlurHandle = (value) => {

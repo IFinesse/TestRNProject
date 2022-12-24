@@ -11,4 +11,6 @@ export const colors = {
   lightGrey2: "#F3F3F3",
   orange: "#FFC612",
   red: "#FF9494",
+  successGreen: "#4bb543",
+  white: "#FFFAFF",
 };
