@@ -1,24 +1,32 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+} from "react-native";
 import React, { useState, useContext } from "react";
 import { colors } from "../consts";
 import Logo from "../components/Logo";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { isIos } from "../utils";
-import { validateEmail, validatePassword } from "../utils";
-
+import { isIos, validateEmail, validatePassword } from "../utils";
 import * as SQLite from "expo-sqlite";
 import { UserContext } from "../../App";
+import showMessage from "../utils/message";
 
 const db = SQLite.openDatabase("users.db");
 
 const Login = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setLoggedIn, setUserEmail } = useContext(UserContext);
 
   const handleSubmit = () => {
     if (validateEmail(email) && validatePassword(password)) {
+      setLoading(true);
       db.transaction((tx) => {
         tx.executeSql(
           "SELECT password FROM users WHERE email = ?",
@@ -30,10 +38,20 @@ const Login = ({ navigation }) => {
               setEmail("");
               setPassword("");
             } else {
-              alert("the email/password is invalid");
+              showMessage({
+                message: "the email/password is invalid",
+                type: "danger",
+              });
             }
+            setLoading(false);
           },
-          (txObj, error) => console.log(error)
+          (txObj, error) => {
+            showMessage({
+              message: "Something went wrong",
+              type: "danger",
+            });
+            setLoading(false);
+          }
         );
       });
     }
@@ -43,42 +61,44 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.logoWrapper}>
-          <Logo />
-        </View>
-        <Text style={styles.title}>Log In To Woorkroom</Text>
-        <Input
-          label="Your email"
-          value={email}
-          onChangeText={(value) => setEmail(value)}
-          placeholder="Email"
-          validateInput={validateEmail}
-          keyboardType="email-address"
-        />
-        <View style={styles.passwordWrapper}>
+    <KeyboardAvoidingView behavior={isIos ? "padding" : "height"}>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.logoWrapper}>
+            <Logo />
+          </View>
+          <Text style={styles.title}>Log In To Woorkroom</Text>
           <Input
-            label="Password"
-            value={password}
-            onChangeText={(value) => setPassword(value)}
-            isPassword={true}
-            placeholder="Password"
-            validateInput={validatePassword}
+            label="Your email"
+            value={email}
+            onChangeText={(value) => setEmail(value)}
+            placeholder="Email"
+            validateInput={validateEmail}
+            keyboardType="email-address"
           />
-          <TouchableOpacity onPress={() => {}} style={styles.forgotPasswordLink}>
-            <Text style={[styles.linkText1, { textAlign: "right" }]}>Forgot password?</Text>
+          <View style={styles.passwordWrapper}>
+            <Input
+              label="Password"
+              value={password}
+              onChangeText={(value) => setPassword(value)}
+              isPassword={true}
+              placeholder="Password"
+              validateInput={validatePassword}
+            />
+            <TouchableOpacity onPress={() => {}} style={styles.forgotPasswordLink}>
+              <Text style={[styles.linkText1, { textAlign: "right" }]}>Forgot password?</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonWrapper}>
+            <Button text="Log in" onPress={handleSubmit} loading={loading} />
+          </View>
+          <TouchableOpacity style={styles.link} onPress={handleSignUp}>
+            <Text style={styles.linkText1}>New User? </Text>
+            <Text style={styles.linkText2}>Create Account</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.buttonWrapper}>
-          <Button text="Log in" onPress={handleSubmit} />
-        </View>
-        <TouchableOpacity style={styles.link} onPress={handleSignUp}>
-          <Text style={styles.linkText1}>New User? </Text>
-          <Text style={styles.linkText2}>Create Account</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

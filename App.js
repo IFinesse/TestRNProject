@@ -3,6 +3,7 @@ import { useFonts } from "expo-font";
 import RootNavigation from "./src/navigation";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as SQLite from "expo-sqlite";
+import FlashMessage from "react-native-flash-message";
 
 const db = SQLite.openDatabase("users.db");
 
@@ -30,6 +31,7 @@ export default function App() {
       <SafeAreaProvider>
         <RootNavigation isLoggedIn={isLoggedIn} />
       </SafeAreaProvider>
+      <FlashMessage position="top" />
     </UserContext.Provider>
   ) : null;
 }

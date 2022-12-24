@@ -12,7 +12,8 @@ const PhoneInput = ({ onSubmit }) => {
   };
 
   const handlePhoneNumber = (number) => {
-    onSubmit([code, number]);
+    let formatedNumber = number.split(" ").join("").split("-").join("");
+    onSubmit([code, formatedNumber]);
   };
 
   return (

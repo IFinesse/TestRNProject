@@ -1,9 +1,18 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  KeyboardAvoidingView,
+  ActivityIndicator,
+} from "react-native";
 import React, { useRef, useState, useContext, useEffect } from "react";
 import { colors } from "../consts";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { validateEmail, validatePassword } from "../utils";
+import { isIos, validateEmail, validatePhone } from "../utils";
 import { EditIcon } from "../components/Icons";
 import ModalSelector from "react-native-modal-selector";
 import * as ImagePicker from "expo-image-picker";
@@ -11,17 +20,19 @@ import { Camera } from "expo-camera";
 import CameraWrapper from "../components/Camera";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as SQLite from "expo-sqlite";
+import { UserContext } from "../../App";
+import showMessage from "../utils/message";
 
 const db = SQLite.openDatabase("users.db");
 
-import { UserContext } from "../../App";
-
-const formatPhone = (phone) => {
-  return phone;
-};
-
-const validatePhone = (phone) => {
-  return phone;
+const formatPhone = (value) => {
+  let arr = value.split("");
+  arr[0] = "+";
+  if (arr[4] && arr[4] !== "-") arr.splice(4, 0, "-");
+  if (arr[9] && arr[9] !== "-") arr.splice(9, 0, "-");
+  if (arr[14] && arr[14] !== "-") arr.splice(14, 0, "-");
+  if (arr[arr.length - 1] === "-" || arr[arr.length - 1] === " ") arr.pop();
+  return arr.join("");
 };
 
 const validateName = (name) => {
@@ -29,46 +40,66 @@ const validateName = (name) => {
 };
 
 const Edit = ({ navigation }) => {
+  const [mainLoading, setMainLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
   const modalRef = useRef();
   const [camera, setCamera] = useState(false);
   const [image, setImage] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+");
   const [position, setPosition] = useState("");
   const [skype, setSkype] = useState("");
 
   const { setLoggedIn, userEmail } = useContext(UserContext);
 
   useEffect(() => {
+    setMainLoading(true);
     db.transaction((tx) => {
       tx.executeSql(
         "SELECT * FROM users WHERE email = ?",
         [userEmail],
         (txObj, resultSet) => {
-          console.log({ resultSet, userEmail });
           setName(resultSet.rows._array[0]?.name);
           setEmail(resultSet.rows._array[0]?.email);
           setPhone(resultSet.rows._array[0]?.phone);
           setPosition(resultSet.rows._array[0]?.position);
           setSkype(resultSet.rows._array[0]?.skype);
           setImage(resultSet.rows._array[0]?.image);
+          setMainLoading(false);
         },
-        (txObj, error) => console.log(error)
+        (txObj, error) => {
+          showMessage({
+            message: "Something went wrong",
+            type: "danger",
+          });
+          setMainLoading(false);
+        }
       );
     });
   }, []);
 
   const handleSave = () => {
     if (name && validatePhone(phone) && validateEmail(email)) {
+      setSaveLoading(true);
       db.transaction((tx) => {
         tx.executeSql(
           "UPDATE users SET name = ?, email = ?, phone = ?, position = ?, skype = ?, image = ? WHERE email = ?",
           [name, email, phone, position, skype, image, userEmail],
           (txObj, resultSet) => {
-            console.log("success");
+            showMessage({
+              message: "Prifile info has been successfuly updated",
+              type: "success",
+            });
+            setSaveLoading(false);
           },
-          (txObj, error) => console.log(error)
+          (txObj, error) => {
+            showMessage({
+              message: "Something went wrong",
+              type: "danger",
+            });
+            setSaveLoading(false);
+          }
         );
       });
     } else {
@@ -118,98 +149,109 @@ const Edit = ({ navigation }) => {
     return <CameraWrapper savePhoto={handleSavePhoto} goBack={() => setCamera(null)} />;
   }
 
-  return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={{ height: 0 }}>Log out</Text>
-          <Text style={styles.headerText}>Edit Profile</Text>
-          <TouchableOpacity onPress={handleLogOut}>
-            <Text style={styles.logOutText}>Log out</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.imageContainer}>
-          <ModalSelector
-            ref={modalRef}
-            data={uploadPhotoSelectorData}
-            onModalClose={(option) => {
-              option.label === "Choose Photo"
-                ? choosePhoto()
-                : option.label === "Take Photo"
-                ? onOpenCamera()
-                : null;
-            }}
-            cancelText="Cancel"
-            overlayStyle={{ justifyContent: "flex-end" }}
-            optionStyle={{ padding: 20 }}
-            optionContainerStyle={{ borderRadius: 10 }}
-            cancelStyle={{ padding: 20 }}
-            cancelTextStyle={{ fontFamily: "PoppinsMedium", fontSize: 16, color: colors.black }}
-            backdropPressToClose={true}
-            animationType="fade"
-          >
-            <TouchableOpacity onPress={() => {}} style={styles.imageWrapper}>
-              {image ? (
-                <Image style={styles.image} source={{ uri: image }} />
-              ) : (
-                // <Image
-                //   style={[styles.image, { borderWidth: 1 }]}
-                //   source={require("../../assets/emptyPhoto.png")}
-                // />
-                <View style={styles.emptyPhoto}>
-                  <MaterialIcons name="add-a-photo" size={24} color={colors.grey} />
-                </View>
-              )}
-
-              <View style={styles.editIconWrapper}>
-                <EditIcon />
-              </View>
-            </TouchableOpacity>
-          </ModalSelector>
-        </View>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.position}>{position}</Text>
-        <Input
-          label="Name"
-          value={name}
-          onChangeText={(value) => setName(value)}
-          placeholder="Name"
-          validateInput={validateName}
-        />
-        <Input
-          label="Email"
-          value={email}
-          onChangeText={(value) => setEmail(value)}
-          placeholder="Email"
-          validateInput={validateEmail}
-          keyboardType="email-address"
-        />
-        <Input
-          label="Phone"
-          value={formatPhone(phone)}
-          onChangeText={(value) => setPhone(value)}
-          placeholder="Phone"
-          validateInput={validatePassword}
-        />
-        <Input
-          label="Position"
-          value={position}
-          onChangeText={(value) => setPosition(value)}
-          placeholder="Position"
-          validateInput={validateName}
-        />
-        <Input
-          label="Skype"
-          value={skype}
-          onChangeText={(value) => setSkype(value)}
-          placeholder="Skype"
-          validateInput={validateName}
-        />
-        <View style={styles.buttonWrapper}>
-          <Button text="Save" onPress={handleSave} />
-        </View>
+  if (mainLoading) {
+    return (
+      <View style={styles.mainLoading}>
+        <ActivityIndicator size="large" color={colors.orange} />
       </View>
-    </ScrollView>
+    );
+  }
+  return (
+    <KeyboardAvoidingView behavior={isIos ? "padding" : "height"}>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={{ height: 0 }}>Log out</Text>
+            <Text style={styles.headerText}>Edit Profile</Text>
+            <TouchableOpacity onPress={handleLogOut}>
+              <Text style={styles.logOutText}>Log out</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.imageContainer}>
+            <ModalSelector
+              ref={modalRef}
+              data={uploadPhotoSelectorData}
+              onModalClose={(option) => {
+                option.label === "Choose Photo"
+                  ? choosePhoto()
+                  : option.label === "Take Photo"
+                  ? onOpenCamera()
+                  : null;
+              }}
+              cancelText="Cancel"
+              overlayStyle={{ justifyContent: "flex-end" }}
+              optionStyle={{ padding: 20 }}
+              optionContainerStyle={{ borderRadius: 10 }}
+              cancelStyle={{ padding: 20 }}
+              cancelTextStyle={{ fontFamily: "PoppinsMedium", fontSize: 16, color: colors.black }}
+              backdropPressToClose={true}
+              animationType="fade"
+            >
+              <TouchableOpacity onPress={() => {}} style={styles.imageWrapper}>
+                {image ? (
+                  <Image style={styles.image} source={{ uri: image }} />
+                ) : (
+                  // <Image
+                  //   style={[styles.image, { borderWidth: 1 }]}
+                  //   source={require("../../assets/emptyPhoto.png")}
+                  // />
+                  <View style={styles.emptyPhoto}>
+                    <MaterialIcons name="add-a-photo" size={24} color={colors.grey} />
+                  </View>
+                )}
+
+                <View style={styles.editIconWrapper}>
+                  <EditIcon />
+                </View>
+              </TouchableOpacity>
+            </ModalSelector>
+          </View>
+          <Text style={styles.name}>{name}</Text>
+          <Text style={styles.position}>{position}</Text>
+          <Input
+            label="Name"
+            value={name}
+            onChangeText={(value) => setName(value)}
+            placeholder="Name"
+            validateInput={validateName}
+          />
+          <Input
+            label="Email"
+            value={email}
+            onChangeText={(value) => setEmail(value)}
+            placeholder="Email"
+            validateInput={validateEmail}
+            keyboardType="email-address"
+          />
+          <Input
+            label="Phone"
+            value={formatPhone(phone)}
+            onChangeText={(value) => setPhone(value)}
+            placeholder="Phone"
+            validateInput={validatePhone}
+            keyboardType="number-pad"
+            maxLength={17}
+          />
+          <Input
+            label="Position"
+            value={position}
+            onChangeText={(value) => setPosition(value)}
+            placeholder="Position"
+            validateInput={validateName}
+          />
+          <Input
+            label="Skype"
+            value={skype}
+            onChangeText={(value) => setSkype(value)}
+            placeholder="Skype"
+            validateInput={validateName}
+          />
+          <View style={styles.buttonWrapper}>
+            <Button text="Save" onPress={handleSave} loading={saveLoading} />
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -293,6 +335,11 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     marginTop: 50,
+  },
+  mainLoading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

@@ -1,18 +1,25 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import React from "react";
 import { colors } from "../consts";
+import showMessage from "../utils/message";
 
-// const Input = (props) => {
-//   return (<View>
-//     <Text style={styles.label}>
-//     <TextInput {...props}>
-//   </View>)
-// }
-
-const Button = ({ text, onPress }) => {
-  return (
-    <TouchableOpacity onPress={onPress} style={styles.button}>
+const Button = ({ text, onPress, loading, disabled }) => {
+  return disabled ? (
+    <TouchableOpacity
+      style={[styles.button, { backgroundColor: colors.lightGrey }]}
+      onPress={() =>
+        showMessage({ message: "Please check if all fields are valid", type: "error" })
+      }
+    >
       <Text style={styles.text}>{text}</Text>
+    </TouchableOpacity>
+  ) : (
+    <TouchableOpacity onPress={disabled ? null : onPress} style={styles.button}>
+      {loading ? (
+        <ActivityIndicator color="white" size="small" />
+      ) : (
+        <Text style={styles.text}>{text}</Text>
+      )}
     </TouchableOpacity>
   );
 };
